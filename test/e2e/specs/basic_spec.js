@@ -123,7 +123,7 @@ describe('Basic flows', function() {
     const primaryAuth = new PrimaryAuthPage();
     const oktaHome = new OktaHomePage();
 
-    primaryAuth.loginToForm('{{{WIDGET_BASIC_USER}}}', '{{{WIDGET_BASIC_PASSWORD}}}');
+    primaryAuth.loginToForm(process.env.WIDGET_BASIC_USER, process.env.WIDGET_BASIC_PASSWORD);
     oktaHome.waitForPageLoad();
   });
 

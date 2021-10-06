@@ -14,7 +14,19 @@ const PrimaryAuthPage = require('../page-objects/PrimaryAuthPage'),
     OIDCAppPage     = require('../page-objects/OIDCAppPage'),
     util            = require('../util/util');
 
-const clientIds = ['{{{WIDGET_WEB_CLIENT_ID}}}', '{{{WIDGET_SPA_CLIENT_ID}}}'];
+const {
+  WIDGET_WEB_CLIENT_ID,
+  WIDGET_SPA_CLIENT_ID,
+  WIDGET_TEST_SERVER,
+  WIDGET_BASIC_USER,
+  WIDGET_BASIC_PASSWORD,
+  WIDGET_BASIC_NAME,
+} = process.env;
+
+const clientIds = [
+  WIDGET_WEB_CLIENT_ID, 
+  WIDGET_SPA_CLIENT_ID
+];
 
 describe('Dev Mode flows', function() {
 
@@ -24,7 +36,7 @@ describe('Dev Mode flows', function() {
         {},
         function(res) {
           if (res.status === 'SUCCESS') {
-            res.session.setCookieAndRedirect('{{{WIDGET_TEST_SERVER}}}' + '/app/UserHome');
+            res.session.setCookieAndRedirect(WIDGET_TEST_SERVER + '/app/UserHome');
           }
         }
       );
@@ -40,7 +52,7 @@ describe('Dev Mode flows', function() {
 
   afterEach(function() {
     // Logout of Okta session
-    browser.get('{{{WIDGET_TEST_SERVER}}}/login/signout');
+    browser.get(`${WIDGET_TEST_SERVER}/login/signout`);
     const el = element(by.css('#okta-sign-in'));
     expect(el.isDisplayed()).toBe(true);
   });
@@ -88,8 +100,8 @@ describe('Dev Mode flows', function() {
       const primaryAuth = new PrimaryAuthPage(),
           oidcApp = new OIDCAppPage();
   
-      primaryAuth.loginToForm('{{{WIDGET_BASIC_USER}}}', '{{{WIDGET_BASIC_PASSWORD}}}');
-      expect(oidcApp.getIdTokenUser()).toBe('{{{WIDGET_BASIC_NAME}}}');
+      primaryAuth.loginToForm(WIDGET_BASIC_USER, WIDGET_BASIC_PASSWORD);
+      expect(oidcApp.getIdTokenUser()).toBe(WIDGET_BASIC_NAME);
     });
   
     it('can login and receive tokens on a callback using the showSignInAndRedirect method', function() {
@@ -108,8 +120,8 @@ describe('Dev Mode flows', function() {
       const primaryAuth = new PrimaryAuthPage(),
           oidcApp = new OIDCAppPage();
   
-      primaryAuth.loginToForm('{{{WIDGET_BASIC_USER}}}', '{{{WIDGET_BASIC_PASSWORD}}}');
-      expect(oidcApp.getIdTokenUser()).toBe('{{{WIDGET_BASIC_NAME}}}');
+      primaryAuth.loginToForm(WIDGET_BASIC_USER, WIDGET_BASIC_PASSWORD);
+      expect(oidcApp.getIdTokenUser()).toBe(WIDGET_BASIC_NAME);
     });
   
   });

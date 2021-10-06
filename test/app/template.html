@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Okta Sign-in Widget</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/okta-sign-in.min.css" type="text/css" />
+  <script type="text/javascript">
+    (function iife() { 
+      window.globalCspTrap = globalCspTrap = [];
+      document.addEventListener("securitypolicyviolation", function(e) {
+        globalCspTrap.push(e);
+      });
+    })();
+  </script>
+  <script src="js/okta-sign-in.min.js"></script>
+</head>
+
+<body>
+  <div id="okta-login-container"></div>
+  <button id="init-button">Initialize</button>
+  <textarea id="config-textarea" rows="20" cols="80" wrap="hard"></textarea>
+
+  <script src="/<%= entry %>.bundle.js"></script>
+</body>
+
+</html>
