@@ -1,5 +1,3 @@
-
-
 import TestAppPage from '../page-objects/test-app.page';
 import PrimaryAuthPage from '../page-objects/primary-auth.page';
 import { waitForLoad } from '../util/waitUtil';

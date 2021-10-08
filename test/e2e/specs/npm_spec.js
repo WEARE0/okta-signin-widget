@@ -15,12 +15,6 @@ const PrimaryAuthPage = require('../page-objects/PrimaryAuthPage'),
     util = require('../util/util'),
     Expect = require('../util/Expect');
 
-const {
-  WIDGET_TEST_SERVER,
-  WIDGET_BASIC_USER_3,
-  WIDGET_BASIC_PASSWORD_3,
-} = process.env;
-
 describe('OIDC flows', function() {
   const primaryAuth = new PrimaryAuthPage(),
       oktaHome = new OktaHomePage();
@@ -33,7 +27,7 @@ describe('OIDC flows', function() {
 
   afterEach(function() {
     // Logout of Okta session
-    browser.get(`${WIDGET_TEST_SERVER}/login/signout`);
+    browser.get('{{{WIDGET_TEST_SERVER}}}/login/signout');
   });
 
   it('can login and auth in a basic flow', function() {
@@ -44,7 +38,7 @@ describe('OIDC flows', function() {
     }
 
     Expect.toBeA11yCompliant();
-    primaryAuth.loginToForm(WIDGET_BASIC_USER_3, WIDGET_BASIC_PASSWORD_3);
+    primaryAuth.loginToForm('{{{WIDGET_BASIC_USER_3}}}', '{{{WIDGET_BASIC_PASSWORD_3}}}');
     oktaHome.waitForPageLoad();
     Expect.toBeA11yCompliant();
 
