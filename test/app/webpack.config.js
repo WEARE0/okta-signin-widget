@@ -6,19 +6,9 @@ ENV.config();
 
 const DEV_SERVER_PORT = 3000;
 
-const ENTRIES = [
-  'basic-dev',
-  'basic',
-  'npm',
-  'oidc'
-];
-
 module.exports = {
   mode: 'development',
-  entry: ENTRIES.reduce((acc, curr) => {
-    acc[curr] = `./src/${curr}.js`;
-    return acc;
-  }, {}),
+  entry: './src/index.js',
   output: {
     filename: '[name].bundle.js',
     path: path.join(__dirname, 'dist'),
@@ -29,33 +19,47 @@ module.exports = {
       '@okta/okta-signin-widget': path.resolve(__dirname, '..', '..', 'dist/js/okta-sign-in.entry.js')
     }
   },
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader'
+        }
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
+      }
+    ]
+  },
   devtool: 'source-map',
   devServer: {
     static: [
       {
-        directory: path.join(__dirname, 'public'),
-        staticOptions: {
-          extensions: ['html']
-        }
+        directory: path.resolve(__dirname, '..', '..', 'dist')
       },
       {
-        directory: path.resolve(__dirname, '..', '..', 'dist')
+        staticOptions: {
+          watchContentBase: true
+        }
       }
     ],
     port: DEV_SERVER_PORT,
+    historyApiFallback: true,
     headers: {
-      'Content-Security-Policy': `script-src 'unsafe-inline' http://localhost:${DEV_SERVER_PORT}`
-    }
+      'Content-Security-Policy': `script-src http://localhost:${DEV_SERVER_PORT}`
+    },
   },
   plugins: [
-    ...ENTRIES.map(entry => new HtmlWebpackPlugin({
-      filename: `${entry}.html`,
-      template: 'template.html',
+    new HtmlWebpackPlugin({
+      template: 'public/index.html',
       inject: false,
-      templateParameters: {
-        entry,
-      }
-    })),
+      // templateParameters: {
+      //   OKTA_SIGN_IN: 'js/okta-sign-in.min.js',
+      // }
+    }),
     new webpack.DefinePlugin({
       'process.env': JSON.stringify(ENV.getValues())
     })

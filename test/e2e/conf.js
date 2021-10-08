@@ -17,7 +17,7 @@ const jasmineReporters = require('jasmine-reporters');
 
 var config = {
   framework: 'jasmine2',
-  specs: ['specs/*.js'],
+  specs: ['specs/basic_spec.js'],
   restartBrowserBetweenTests: false,
   onPrepare: function() {
     jasmine.getEnv().addReporter(new jasmineReporters.JUnitXmlReporter({
@@ -43,7 +43,12 @@ if (process.env.TRAVIS  || process.env.CHROME_HEADLESS) {
     config.capabilities = {
       'browserName': 'chrome',
       'chromeOptions': {
-        'args': ['--headless','--disable-gpu','--window-size=1600x1200','--no-sandbox']
+        'args': [
+          '--headless',
+          '--disable-gpu',
+          '--window-size=1600x1200',
+          '--no-sandbox'
+        ]
       }
     };
   }

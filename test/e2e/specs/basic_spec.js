@@ -10,11 +10,15 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 /* global oktaSignIn, options, OktaSignIn */
-const PrimaryAuthPage = require('../page-objects/PrimaryAuthPage'),
-    OktaHomePage = require('../page-objects/OktaHomePage'),
-    util = require('../util/util');
+const PrimaryAuthPage = require('../page-objects/PrimaryAuthPage');
+const OktaHomePage = require('../page-objects/OktaHomePage');
+const TestAppPage = require('../page-objects/TestAppPage');
+const BasicPage = require('../page-objects/BasicPage');
+const util = require('../util/util');
 
 describe('Basic flows', function() {
+  const testApp = new TestAppPage();
+  const basic = new BasicPage();
   const primaryAuth = new PrimaryAuthPage();
 
   beforeEach(function() {
@@ -23,7 +27,16 @@ describe('Basic flows', function() {
     util.loadTestPage('basic');
   });
 
-  it('can hide, show, remove, and start a widget', function() {
+  fit('can hide, show, remove, and start a widget', function() {
+    const config = {
+      baseUrl: 'https://oswtests.oktapreview.com',
+      authParams: {
+        pkce: false
+      }
+    };
+    testApp.setConfig(JSON.stringify(config));
+    basic.startWidget();
+
     // Ensure the widget exists
     const el = element(by.css('#okta-sign-in'));
     const signInTitle = element(by.css('[data-se="o-form-head"]'));
@@ -31,15 +44,18 @@ describe('Basic flows', function() {
     expect(signInTitle.getText()).toBe('Sign In');
 
     // Ensure the widget can hide
-    browser.executeScript('oktaSignIn.hide()');
+    basic.hideWidget();
+    // browser.executeScript('oktaSignIn.hide()');
     expect(el.isDisplayed()).toBe(false);
 
     // Ensure the widget can be unhidden
-    browser.executeScript('oktaSignIn.show()');
+    basic.showWidget();
+    // browser.executeScript('oktaSignIn.show()');
     expect(el.isDisplayed()).toBe(true);
 
     // Ensure the widget can be removed
-    browser.executeScript('oktaSignIn.remove()');
+    basic.removeWidget();
+    // browser.executeScript('oktaSignIn.remove()');
     expect(el.isPresent()).toBe(false);
 
     // Ensure a new widget can be created

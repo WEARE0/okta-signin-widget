@@ -1,0 +1,108 @@
+import assert from 'assert';
+import TestAppPage from '../page-objects/test-app.page';
+import PrimaryAuthPage from '../page-objects/primary-auth.page';
+import OktaHomePage from '../page-objects/okta-home.page';
+import { waitForLoad } from '../util/waitUtil';
+
+const {
+  WIDGET_TEST_SERVER,
+  WIDGET_BASIC_USER,
+  WIDGET_BASIC_PASSWORD,
+} = process.env;
+
+describe('Basic flows', () => {
+  let config;
+  beforeEach(async () => {
+    config = {
+      baseUrl: WIDGET_TEST_SERVER,
+      authParams: {
+        pkce: false
+      }
+    };
+    await TestAppPage.open();
+    await TestAppPage.setConfig(config);
+  });
+
+  afterEach(async () => {
+    await TestAppPage.ssoLogout();
+  });
+
+  it('can hide, show, remove, and start a widget', async () => {
+    await TestAppPage.startButton.click();
+    await waitForLoad(TestAppPage.widget);
+
+    await TestAppPage.hideButton.click();
+    await TestAppPage.widget.then(el => el.isDisplayed()).then(isDisplayed => {
+      assert(isDisplayed === false);
+    });
+
+    await TestAppPage.showButton.click();
+    await TestAppPage.widget.then(el => el.isDisplayed()).then(isDisplayed => {
+      assert(isDisplayed === true);
+    });
+
+    await TestAppPage.removeButton.click();
+    await TestAppPage.widget.then(el => el.isExisting()).then(isExisting => {
+      assert(isExisting === false);
+    });
+
+    config = {
+      ...config,
+      i18n: {
+        en: {
+          'primaryauth.title': 'Sign In to Acme'
+        }
+      }
+    };
+    await TestAppPage.setConfig(config);
+    await TestAppPage.startButton.click();
+    await waitForLoad(TestAppPage.widget);
+    await TestAppPage.widgetTitle.then(el => el.getText()).then(txt => {
+      expect(txt).toBe('Sign In to Acme');
+    });
+  });
+
+  it('modifies the error banner using an afterError event', async () => {
+    await TestAppPage.startButton.click();
+    await waitForLoad(TestAppPage.widget);
+    await PrimaryAuthPage.login('foo', 'bar');
+    await PrimaryAuthPage.assertErrorMessage('Custom Error!')
+  });
+
+  it('has the style from config.colors', async () => {
+    config = {
+      ...config,
+      colors: {
+        brand: '#008000'
+      }
+    };
+    await TestAppPage.setConfig(config);
+    await TestAppPage.startButton.click();
+    await waitForLoad(TestAppPage.widget);
+    await TestAppPage.submit.then(el => el.getCSSProperty('background')).then(background => {
+      assert(background.value.includes('rgba(0, 128, 0, 1)'));
+    });
+  });
+
+  it('redircts to successful page when features.redirectByFormSubmit is on', async () => {
+    // TODO: remove when OKTA-415707 is resolved
+    if (process.env.ORG_OIE_ENABLED) {
+      console.error('test is disabled: OKTA-415707');
+      return;
+    }
+
+    config = {
+      ...config,
+      features: {
+        redirectByFormSubmit: true,
+      }
+    };
+    await TestAppPage.startButton.click();
+    await waitForLoad(TestAppPage.widget);
+    await PrimaryAuthPage.login(WIDGET_BASIC_USER, WIDGET_BASIC_PASSWORD);
+    await OktaHomePage.waitForPageLoad();
+  });
+
+});
+
+
