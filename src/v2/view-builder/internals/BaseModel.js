@@ -11,7 +11,7 @@
  */
 import { _, Model, loc } from 'okta';
 
-const convertUiSchemaFieldToProp = (uiSchemaField, remediationName) => {
+const convertUiSchemaFieldToProp = (uiSchemaField) => {
   const config = Object.assign(
     {},
     _.chain(uiSchemaField)
@@ -25,24 +25,22 @@ const convertUiSchemaFieldToProp = (uiSchemaField, remediationName) => {
   }
 
   // Customize required error text
-  if (remediationName === 'identify') {
-    const identifierRequiredi18nKey = 'error.username.required';
-    const passwordRequiredi18nKey = 'error.password.required';
-    if (uiSchemaField.name === 'identifier' && config.required) {
-      config.required = false;
-      config.validate = function(value) {
-        if (_.isEmpty(value)) {
-          return loc(identifierRequiredi18nKey, 'login');
-        }
-      };
-    } else if (uiSchemaField.name === 'credentials.passcode' && config.required) {
-      config.required = false;
-      config.validate = function(value) {
-        if (_.isEmpty(value)) {
-          return loc(passwordRequiredi18nKey, 'login');
-        }
-      };
-    }
+  const identifierRequiredi18nKey = 'error.username.required';
+  const passwordRequiredi18nKey = 'error.password.required';
+  if (uiSchemaField.name === 'identifier' && config.required) {
+    config.required = false;
+    config.validate = function(value) {
+      if (_.isEmpty(value)) {
+        return loc(identifierRequiredi18nKey, 'login');
+      }
+    };
+  } else if (uiSchemaField.name === 'credentials.passcode' && config.required) {
+    config.required = false;
+    config.validate = function(value) {
+      if (_.isEmpty(value)) {
+        return loc(passwordRequiredi18nKey, 'login');
+      }
+    };
   }
 
   return { [uiSchemaField.name]: config };
@@ -71,18 +69,18 @@ const createPropsAndLocals = function(
 
       Object.assign(
         local,
-        convertUiSchemaFieldToProp(Object.assign({}, schema, optionUiSchemaValue), remediation.name));
+        convertUiSchemaFieldToProp(Object.assign({}, schema, optionUiSchemaValue)));
 
       if (optionUiSchemaIndex) {
         createPropsAndLocals(
-          { uiSchema: schema.optionsUiSchemas[optionUiSchemaIndex], name: remediation.name },
+          { uiSchema: schema.optionsUiSchemas[optionUiSchemaIndex] },
           optionUiSchemaConfig,
           props,
           local,
         );
       }
     } else {
-      Object.assign(props, convertUiSchemaFieldToProp(schema, remediation.name));
+      Object.assign(props, convertUiSchemaFieldToProp(schema));
     }
   });
 };
