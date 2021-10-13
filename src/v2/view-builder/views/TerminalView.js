@@ -38,7 +38,7 @@ const EMAIL_AUTHENTICATOR_TERMINAL_KEYS = [
   RETURN_LINK_EXPIRED_KEY,
   OPERATION_CANCELED_ON_OTHER_DEVICE_KEY,
   OPERATION_CANCELED_BY_USER_KEY,
-  IDX_RETURN_LINK_OTP_ONLY
+  IDX_RETURN_LINK_OTP_ONLY,
 ];
 
 const DEVICE_CODE_ERROR_KEYS = [
@@ -61,7 +61,7 @@ const NO_BACKTOSIGNIN_LINK_VIEWS = [
   ...DEVICE_CODE_FLOW_TERMINAL_KEYS,
   UNLOCK_ACCOUNT_FAILED_PERMISSIONS,
   RESET_PASSWORD_NOT_ALLOWED,
-  IDX_RETURN_LINK_OTP_ONLY
+  IDX_RETURN_LINK_OTP_ONLY,
 ];
 
 // Key map to transform terminal view titles {ApiKey : WidgetKey}  
@@ -78,7 +78,7 @@ const terminalViewTitles = {
   [DEVICE_NOT_ACTIVATED_CONSENT_DENIED] : 'device.code.activated.error.title',
   [DEVICE_NOT_ACTIVATED_INTERNAL_ERROR] : 'device.code.activated.error.title',
   [RETURN_TO_ORIGINAL_TAB_KEY] : 'oie.consent.enduser.email.allow.title',
-  [IDX_RETURN_LINK_OTP_ONLY]: 'idx.return.link.otponly.title'
+  [IDX_RETURN_LINK_OTP_ONLY]: 'idx.return.link.otponly.title',
 };
 
 const Body = BaseForm.extend({
@@ -126,11 +126,11 @@ const Body = BaseForm.extend({
     } else if (this.options.appState.containsMessageWithI18nKey('tooManyRequests')) {
       description = loc('oie.tooManyRequests', 'login');
     } else if (this.options.appState.containsMessageWithI18nKey(IDX_RETURN_LINK_OTP_ONLY)) {
-      
+
       // Get app name
       const app = this.options.appState.get('app');
       const appName = app.value.label;
-      
+
       // Get browser, OS, geolocation from client object
       const client = this.options.appState.get('client').value;
       const browser = client.browser;
@@ -147,7 +147,7 @@ const Body = BaseForm.extend({
       messagesObjs.value.push({ message: generateOtpOnlyHTML('browser', browserOnOsString) });
       messagesObjs.value.push({ message: generateOtpOnlyHTML('app', appName) });
       messagesObjs.value.push({ message: generateOtpOnlyHTML('geolocation', geolocation) });
-      messagesObjs.value.push({ message: loc('idx.return.link.otponly.warning', 'login')});
+      messagesObjs.value.push({ message: loc('idx.return.link.otponly.warning', 'login') });
     }
 
     if (description && Array.isArray(messagesObjs?.value)) {
@@ -169,7 +169,7 @@ const Body = BaseForm.extend({
               prepend: true,
             });
           } else {
-            if (msg.startsWith("<")) { // Add html without wrapper tags
+            if (msg.startsWith("<")) { // Add html strings without wrapper tags
               this.add(msg, '.ion-messages-container');
             } else { // if msg is a string literal, add using <p> tag
               this.add(`<p>${msg}</p>`, '.ion-messages-container');
@@ -209,7 +209,7 @@ export default BaseView.extend({
 });
 
 const generateOtpOnlyHTML = (fieldName, message) => {
-  switch(fieldName) {
+  switch (fieldName) {
     case "browser":
       return `<div class="enduser-email-consent--info no-translate">
                 <i class="enduser-email-consent--icon icon--desktop"></i>
@@ -228,6 +228,6 @@ const generateOtpOnlyHTML = (fieldName, message) => {
     case "otp":
       break;
     default:
-      return ""; 
+      return "";
   }
 }
