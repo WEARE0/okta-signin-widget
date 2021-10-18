@@ -201,7 +201,7 @@ const Body = BaseForm.extend({
               prepend: true,
             });
           } else {
-              this.add(`<p>${msg}</p>`, '.ion-messages-container');
+            this.add(`<p>${msg}</p>`, '.ion-messages-container');
           }
         });
     }
@@ -235,5 +235,3 @@ export default BaseView.extend({
   Body,
   Footer
 });
-
-
